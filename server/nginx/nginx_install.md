@@ -152,3 +152,28 @@ systemctl restart nginx
 
 1、nginx启动后，浏览器无法访问  
 查看云服务器的安全组是否开启了80端口
+
+2、使用`systemctl start nginx`启动时，命令卡住
+使用`systemctl status nginx`命令查看状态
+
+
+```bash
+[root@iZm5ea582ilcz7maaszqw6Z init.d]# systemctl status nginx
+● nginx.service - SYSV: Nginx is an HTTP(S) server, HTTP(S) reverse proxy and IMAP/POP3 proxy server
+   Loaded: loaded (/etc/rc.d/init.d/nginx; bad; vendor preset: disabled)
+   Active: failed (Result: timeout) since 五 2019-08-23 15:36:17 CST; 1min 44s ago
+     Docs: man:systemd-sysv-generator(8)
+   CGroup: /system.slice/nginx.service
+           ├─4436 nginx: master process /usr/local/nginx/sbin/nginx -c /usr/local/nginx/conf/nginx.conf
+           └─4438 nginx: worker process
+
+8月 23 15:30:43 iZm5ea582ilcz7maaszqw6Z systemd[1]: Starting SYSV: Nginx is an HTTP(S) server, HTTP(S) reverse proxy and IMAP...ver...
+8月 23 15:30:43 iZm5ea582ilcz7maaszqw6Z nginx[4423]: Starting nginx: [  OK  ]
+8月 23 15:30:43 iZm5ea582ilcz7maaszqw6Z systemd[1]: PID file /usr/local/nginx/logs/nginx.pid not readable (yet?) after start.
+8月 23 15:36:17 iZm5ea582ilcz7maaszqw6Z systemd[1]: nginx.service start operation timed out. Terminating.
+8月 23 15:36:17 iZm5ea582ilcz7maaszqw6Z systemd[1]: Failed to start SYSV: Nginx is an HTTP(S) server, HTTP(S) reverse proxy a...erver.
+8月 23 15:36:17 iZm5ea582ilcz7maaszqw6Z systemd[1]: Unit nginx.service entered failed state.
+8月 23 15:36:17 iZm5ea582ilcz7maaszqw6Z systemd[1]: nginx.service failed.
+```
+
+发现无法读取PID file文件。将nginx.conf里面的pid_file属性配置为`/usr/local/nginx/logs/nginx.pid`即可。
